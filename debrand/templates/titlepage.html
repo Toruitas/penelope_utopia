@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}{% endblock %}
+
+{% block body_main_content %}
+
+    <div id="title-page">
+        <img src="{% static 'img' %}/debrand_logo.jpg" alt="debrand_logo">
+        <div id="select-menu">
+            <h2><a href="{% url 'character_customization' %}">New Game</a></h2>
+            <h2><a href="{% url 'leaderboard' %}">Leaderboard</a></h2>
+        </div>
+    </div>
+
+{% endblock body_main_content %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load martortags %}
+{% load static %}
+
+{% block head_title %}{{ name }}{% endblock %}
+
+{% block body_content %}
+
+    <img src="{% static 'img/beginning.jpg' %}" alt="beginning image">
+    <h2 class="img-header">{{ name }} for {{ playername }}</h2>
+    <div class="level-content-container">
+        {{ description|safe_markdown  }}
+    </div>
+
+    {% for button in buttons %}
+        <a href="{% url 'level'  button.1 %}"><button class="btn btn-default">{{ button.0 }}</button></a>
+    {% endfor %}
+
+
+    <div class="image-credit">
+        <small>Image credit: </small>
+    </div>
+
+{% endblock %}
