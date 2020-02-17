@@ -76,13 +76,17 @@ def level_view(request, level_slug="beginning"):
     player.levels_played.add(level_object)  # add this level to the list of played levels (saves automatically)
     player.update_score()  # and update the score. todo: add a UI element for the score. SIDEBAR.
 
+    sidebar_data = player.prepare_sidebar_data()
     context = {
         'playername': player.get_name(),
         'img_src': level_object.get_img_src(),
         'name': level_object.name,
         'description': level_object.get_description(),
         'buttons': buttons,
-        'score': player.get_score()
+        'score': player.get_score(),
+        'attribution': level_object.get_attribution(),
+        'sidebar_visible': level_object.get_sidebar_status(),
+        'sidebar_data': sidebar_data,
     }
     return render(request, 'level.html', context)
 

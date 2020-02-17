@@ -92,5 +92,14 @@ button, .btn, .btn-default{
 }
 
 .level-img{
-  max-width:1200px;
+  max-height:600px;
+}
+
+.sidebar{
+  margin-top:5rem;
+  background-color:#050505;
+}
+
+.sidebar img{
+  max-width:200px;
 }

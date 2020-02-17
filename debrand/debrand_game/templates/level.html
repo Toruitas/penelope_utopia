@@ -6,19 +6,38 @@
 
 {% block body_content %}
 
-    <img class="level-img" src="{% static 'img' %}/{{ img_src }}" alt="beginning image">
-    <h2 class="img-header">{{ name }} for {{ playername }}</h2>
-    <div class="level-content-container">
-        {{ description|safe_markdown  }}
-    </div>
+    <div class="row">
+        {% if sidebar_visible %}
 
-    {% for button in buttons %}
-        <a href="{{ button.1 }}"><button class="btn btn-default">{{ button.0 }}</button></a>
-    {% endfor %}
+            <div class="col-lg-2 sidebar">
+                <img src="{% static 'img' %}/debrand_logo.jpg" alt="debrand_logo">
+                Blocks for you:
+                <br><br>
+                {% for variety, values in sidebar_data.varieties.items %}
+                    {{ variety }}: <br>
+                    {{ values.encountered }} encountered <br>
+                    {{ values.points }} points <br>
+                    <br>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="col-lg-10">
+            <img class="level-img" src="{% static 'img' %}/{{ img_src }}" alt="beginning image">
+            <h2 class="img-header">{{ name }} for {{ playername }}</h2>
+            <div class="level-content-container">
+                {{ description|safe_markdown  }}
+            </div>
+
+            {% for button in buttons %}
+                <a href="{{ button.1 }}"><button class="btn btn-default">{{ button.0 }}</button></a>
+            {% endfor %}
 
 
-    <div class="image-credit">
-        <small>Image credit: </small>
+            <div class="image-credit">
+                <small>Image credit: {{ attribution }}</small>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

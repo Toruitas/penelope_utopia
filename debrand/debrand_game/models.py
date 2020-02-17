@@ -12,11 +12,14 @@ class GameObject(models.Model):
 
     name = models.CharField(max_length=96)
     slug = models.SlugField(unique=True, blank=True)
-    variety = models.CharField(choices=[
+    variety = models.CharField(
+        choices=[
             ('UN', "Unseen"),
             ("P", "Poop"),
             ("A", "Advertisement"),
-            ("E", "Emergency")
+            ("E", "Emergency"),
+            ("B", "Branding"),
+            ("L", "Life")
         ],
         max_length=2
     )
@@ -49,6 +52,13 @@ class GameObject(models.Model):
     def get_points(self):
         return self.points
 
+    def get_variety(self):
+        """
+        https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model.get_FOO_display
+        :return:
+        """
+        return self.get_variety_display()
+
 
 class Level(models.Model):
     """
@@ -57,11 +67,13 @@ class Level(models.Model):
     """
     name = models.CharField(max_length=96)
     slug = models.SlugField(unique=True, blank=True)
-    game_objects = models.ManyToManyField(GameObject,blank=True)
+    game_objects = models.ManyToManyField(GameObject, blank=True)
     next_levels = models.ManyToManyField("self", symmetrical=False, blank=True)
     description = MartorField()
     button_text = models.CharField(max_length=60)  # this goes on the buttons for when this is a next level
     img_src = models.CharField(max_length=64, blank=True)
+    sidebar = models.BooleanField(default=False)
+    img_attribution = models.CharField(max_length=96, blank=True)
 
     def __str__(self):
         return self.name
@@ -128,6 +140,12 @@ class Level(models.Model):
     def has_next(self):
         return len(self.next_levels.all())
 
+    def get_attribution(self):
+        return self.img_attribution
+
+    def get_sidebar_status(self):
+        return self.sidebar
+
 
 # Create your models here.
 class Player(models.Model):
@@ -181,3 +199,26 @@ class Player(models.Model):
     def get_completed(self):
         return self.completed
 
+    def prepare_sidebar_data(self):
+        """
+        Prepare a data dict. Top level is which variety of object they've encountered.
+        :return:
+        """
+        varieties_dict = {}
+        for level in self.levels_played.all():
+            for game_obj in level.game_objects.all():
+                if game_obj.get_variety() in varieties_dict:
+                    varieties_dict[game_obj.get_variety()]["encountered"] += 1
+                    varieties_dict[game_obj.get_variety()]["points"] += game_obj.get_points()
+                else:
+                    varieties_dict[game_obj.get_variety()] = {
+                        "encountered": 1,
+                        "points": game_obj.get_points()
+                    }
+        data_dict = {
+            "levels_played": len(self.levels_played.all()),
+            "varieties": varieties_dict
+        }
+        print(data_dict)
+
+        return data_dict
