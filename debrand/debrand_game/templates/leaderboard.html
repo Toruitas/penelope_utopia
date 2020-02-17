@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}{{ name }}{% endblock %}
+
+{% block body_content %}
+
+    <img src="{% static 'img/debrand_logo.jpg' %}" alt="debrand logo">
+    <h2 class="img-header">Utopia Leaderboard</h2>
+
+    <div class="players-list">
+    {% for player in players %}
+        <div>{{ player.get_name }}</div>
+    {% endfor %}
+    </div>
+
+
+    <div class="image-credit">
+        <small>Image credit: </small>
+    </div>
+
+{% endblock %}

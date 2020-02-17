@@ -90,3 +90,7 @@ button, .btn, .btn-default{
   margin-top:2rem;
   width:600px;
 }
+
+.level-img{
+  max-width:1200px;
+}

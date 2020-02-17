@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .models import Player, Level, GameObject
 from .forms import PlayerForm
 
@@ -31,7 +31,14 @@ def leaderboard_view(request):
     :param request:
     :return:
     """
-    context = {}
+    # todo: handle player and non-player use cases
+    player_id = request.session.get('player_id', False)
+    player = Player.objects.get(player_id)
+    players_who_completed = Player.objects.filter(completed=True)
+    context = {
+        'players': players_who_completed,
+        'player_id':player_id
+    }
     return render(request, 'leaderboard.html', context)
 
 
@@ -51,19 +58,31 @@ def level_view(request, level_slug="beginning"):
     try:
         player = Player.objects.get(id=request.session.get('player_id'))
     except:  # if no player with that ID, redirect to title screen
-        redirect('title')
+        return redirect('title')
 
     # get this level.
-    level_object = Level.objects.get(slug=level_slug)
-    buttons = level_object.get_next_buttons()
-    # my_obj.categories.add(fragmentCategory.objects.get(id=1))
+    try:
+        level_object = Level.objects.get(slug=level_slug)
+    except:
+        # no next level so redirect to end
+        player.set_completed()
+        return redirect('leaderboard')
+
+    if level_object.has_next():
+        buttons = level_object.get_next_buttons()
+    else:
+        buttons = [("See results", reverse('leaderboard')),]
+
+    player.levels_played.add(level_object)  # add this level to the list of played levels (saves automatically)
+    player.update_score()  # and update the score. todo: add a UI element for the score. SIDEBAR.
+
     context = {
-        'playername': player.name,
-        'img_src': level_object.img_src,
+        'playername': player.get_name(),
+        'img_src': level_object.get_img_src(),
         'name': level_object.name,
-        'description': level_object.description,
-        'buttons': buttons
+        'description': level_object.get_description(),
+        'buttons': buttons,
+        'score': player.get_score()
     }
     return render(request, 'level.html', context)
-
 
