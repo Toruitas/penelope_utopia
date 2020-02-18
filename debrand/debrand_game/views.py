@@ -37,7 +37,7 @@ def leaderboard_view(request):
     players_who_completed = Player.objects.filter(completed=True)
     context = {
         'players': players_who_completed,
-        'player_id':player_id
+        'player_id': player_id
     }
     return render(request, 'leaderboard.html', context)
 
